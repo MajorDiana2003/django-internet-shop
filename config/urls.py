@@ -17,10 +17,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from catalog import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.home, name='home'),             # Главная страница (пустой путь http://127.0.0)
-    path('contacts/', views.contacts, name='contacts'), # Страница контактов (http://127.0.0contacts/)
+    path('', views.home, name='home'),
+    path('contacts/', views.contacts, name='contacts'),
 ]
+
+# Добавляем раздачу медиафайлов (картинок) в режиме разработки
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 
