@@ -15,12 +15,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from catalog import views
+from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.home, name='home'),             # Главная страница (пустой путь http://127.0.0)
-    path('contacts/', views.contacts, name='contacts'), # Страница контактов (http://127.0.0contacts/)
+    # Подключаем маршруты приложения catalog через функцию include()
+    path('', include('catalog.urls', namespace='catalog')),
 ]
+
 
