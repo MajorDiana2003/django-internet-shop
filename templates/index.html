@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная страница</title>
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <style>
+        .sidebar { min-height: 100vh; background-color: #212529; padding: 1rem; flex: 0 0 220px; width: 220px; }
+        .row { display: flex; flex-wrap: nowrap; margin-right: -.75rem; margin-left: -.75rem; }
+        main { flex-grow: 1; padding: 3rem 2rem; width: 100%; overflow-x: hidden; }
+        .nav { display: flex; flex-direction: column; padding-left: 0; margin-bottom: 0; list-style: none; }
+        .nav-link { display: block; padding: .5rem 1rem; color: #8a8d93; text-decoration: none; }
+        .nav-link.active { color: #fff!important; background-color: #0d6efd; border-radius: .375rem; }
+        .card { position: relative; display: flex; flex-direction: column; min-width: 0; background-color: #fff; border: 1px solid #dee2e6; border-radius: .375rem; box-shadow: 0 .125rem .25rem rgba(0,0,0,.075); margin-bottom: 1.5rem; }
+        .card-header { padding: .75rem 1.25rem; background-color: #f8f9fa; border-bottom: 1px solid #dee2e6; }
+        .card-body { padding: 1.25rem; }
+        .list-unstyled { padding-left: 0; list-style: none; }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Боковое меню -->
+        <nav class="sidebar">
+            <div class="d-flex align-items-center mb-3 text-white text-decoration-none">
+                <span class="fs-4 fw-bold">Магазин</span>
+            </div>
+            <hr class="text-secondary" style="border-top: 1px solid white; opacity: 0.25;">
+            <ul class="nav">
+                <li><a href="/" class="nav-link active">Главная</a></li>
+                <li><a href="/contacts/" class="nav-link">Контакты</a></li>
+            </ul>
+        </nav>
+
+        <!-- Контент -->
+        <main class="text-center">
+            <h1 class="display-4 mb-4">Наши товары и услуги</h1>
+            <p class="text-muted mb-5">Добро пожаловать в наш новый интернет-магазин на Django!</p>
+
+            <div class="row justify-content-center" style="gap: 20px; flex-wrap: wrap;">
+                <div class="card shadow-sm" style="width: 18rem;">
+                    <div class="card-header py-3 bg-light"><h4 class="my-0 fw-normal">Товар 1</h4></div>
+                    <div class="card-body">
+                        <h1 class="card-title pricing-card-title">$99</h1>
+                        <p class="text-muted mt-3">Описание крутого товара в нашем магазине.</p>
+                        <button type="button" class="w-100 btn btn-primary">Купить</button>
+                    </div>
+                </div>
+                <div class="card shadow-sm" style="width: 18rem;">
+                    <div class="card-header py-3 bg-light"><h4 class="my-0 fw-normal">Товар 2</h4></div>
+                    <div class="card-body">
+                        <h1 class="card-title pricing-card-title">$149</h1>
+                        <p class="text-muted mt-3">Описание премиум товара для клиентов.</p>
+                        <button type="button" class="w-100 btn btn-primary">Купить</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>
