@@ -29,8 +29,8 @@
             </div>
             <hr class="text-secondary" style="border-top: 1px solid white; opacity: 0.25;">
             <ul class="nav">
-                <li><a href="/" class="nav-link active">Главная</a></li>
-                <li><a href="/contacts/" class="nav-link">Контакты</a></li>
+                <li><a href="{% url 'catalog:home' %}" class="nav-link active">Главная</a></li>
+                <li><a href="{% url 'catalog:contacts' %}" class="nav-link">Контакты</a></li>
             </ul>
         </nav>
 
