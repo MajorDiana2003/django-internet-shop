@@ -1,0 +1,21 @@
+<div class="sidebar" style="min-height: 100vh; background-color: #212529; padding: 1rem; flex: 0 0 220px; width: 220px;">
+    <a href="{% url 'catalog:home' %}" class="d-flex align-items-center mb-3 text-white text-decoration-none">
+        <span class="fs-4 fw-bold">Магазин</span>
+    </a>
+    <hr class="text-secondary">
+    <ul class="nav" style="display: flex; flex-direction: column; padding-left: 0; margin-bottom: 0; list-style: none;">
+        <li class="nav-item mb-2">
+            <!-- Если путь строго '/', кнопка становится активной (белой) -->
+            <a href="{% url 'catalog:home' %}" class="nav-link {% if request.path == '/' %}active bg-primary text-white{% else %}text-white-50{% endif %}" style="display: block; padding: .5rem 1rem; border-radius: .25rem; text-decoration: none;">Главная</a>
+        </li>
+        <li class="nav-item mb-2">
+            <!-- Если в пути есть 'contacts', подсвечиваем контакты -->
+            <a href="{% url 'catalog:contacts' %}" class="nav-link {% if 'contacts' in request.path %}active bg-primary text-white{% else %}text-white-50{% endif %}" style="display: block; padding: .5rem 1rem; border-radius: .25rem; text-decoration: none;">Контакты</a>
+        </li>
+        <li class="nav-item mb-2">
+            <!-- Если в пути есть 'create', подсвечиваем добавление товара -->
+            <a href="{% url 'catalog:product_create' %}" class="nav-link {% if 'create' in request.path %}active bg-primary text-white{% else %}text-white-50{% endif %}" style="display: block; padding: .5rem 1rem; border-radius: .25rem; text-decoration: none;">Добавить товар</a>
+
+        </li>
+    </ul>
+</div>

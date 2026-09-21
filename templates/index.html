@@ -1,66 +1,58 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Главная страница</title>
-    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-    <style>
-        .sidebar { min-height: 100vh; background-color: #212529; padding: 1rem; flex: 0 0 220px; width: 220px; }
-        .row { display: flex; flex-wrap: nowrap; margin-right: -.75rem; margin-left: -.75rem; }
-        main { flex-grow: 1; padding: 3rem 2rem; width: 100%; overflow-x: hidden; }
-        .nav { display: flex; flex-direction: column; padding-left: 0; margin-bottom: 0; list-style: none; }
-        .nav-link { display: block; padding: .5rem 1rem; color: #8a8d93; text-decoration: none; }
-        .nav-link.active { color: #fff!important; background-color: #0d6efd; border-radius: .375rem; }
-        .card { position: relative; display: flex; flex-direction: column; min-width: 0; background-color: #fff; border: 1px solid #dee2e6; border-radius: .375rem; box-shadow: 0 .125rem .25rem rgba(0,0,0,.075); margin-bottom: 1.5rem; }
-        .card-header { padding: .75rem 1.25rem; background-color: #f8f9fa; border-bottom: 1px solid #dee2e6; }
-        .card-body { padding: 1.25rem; }
-        .list-unstyled { padding-left: 0; list-style: none; }
-    </style>
-</head>
-<body>
-<div class="container-fluid">
-    <div class="row">
-        <!-- Боковое меню -->
-        <nav class="sidebar">
-            <div class="d-flex align-items-center mb-3 text-white text-decoration-none">
-                <span class="fs-4 fw-bold">Магазин</span>
-            </div>
-            <hr class="text-secondary" style="border-top: 1px solid white; opacity: 0.25;">
-            <ul class="nav">
-                <li><a href="{% url 'catalog:home' %}" class="nav-link active">Главная</a></li>
-                <li><a href="{% url 'catalog:contacts' %}" class="nav-link">Контакты</a></li>
-            </ul>
-        </nav>
+{% extends 'base.html' %}
 
-        <!-- Контент -->
-        <main class="text-center">
-            <h1 class="display-4 mb-4">Наши товары и услуги</h1>
-            <p class="text-muted mb-5">Добро пожаловать в наш новый интернет-магазин на Django!</p>
+{% block title %}Главная страница{% endblock %}
 
-                        <div class="row justify-content-center" style="gap: 20px; flex-wrap: wrap;">
-                <!-- Цикл Django для автоматического вывода всех продуктов из базы данных -->
-                {% for product in products %}
-                <div class="card shadow-sm" style="width: 18rem;">
-                    <div class="card-header py-3 bg-light">
-                        <h4 class="my-0 fw-normal">{{ product.name }}</h4>
-                    </div>
-                    <div class="card-body">
-                        <p class="text-muted text-start"><strong>Категория:</strong> {{ product.category.name }}</p>
-                        <h1 class="card-title pricing-card-title">{{ product.price }} <small class="text-muted fw-light">руб.</small></h1>
-                        <p class="text-muted mt-3 text-start">{{ product.description }}</p>
-                        <button type="button" class="w-100 btn btn-primary mt-auto">Купить</button>
-                    </div>
-                </div>
-                {% empty %}
-                <p class="text-muted">В магазине пока нет доступных товаров.</p>
-                {% endfor %}
+{% block content %}
+<h1 class="display-4 mb-4">Наши товары и услуги</h1>
+<p class="text-muted mb-4">Добро пожаловать в наш новый интернет-магазин на Django!</p>
+
+<div class="row justify-content-center" style="display: flex; flex-wrap: wrap; margin-right: -.75rem; margin-left: -.75rem;">
+    {% for product in page_obj %}
+    <div class="col-md-4 px-2" style="flex: 0 0 auto; width: 33.33333333%;">
+        <div class="card mb-4" style="position: relative; display: flex; flex-direction: column; min-width: 0; background-color: #fff; border: 1px solid #dee2e6; border-radius: .375rem; box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);">
+            <div class="card-header py-3 bg-light" style="padding: .75rem 1.25rem; background-color: rgba(0,0,0,.03); border-bottom: 1px solid #dee2e6;">
+                <h4 class="my-0 fw-normal">{{ product.name }}</h4>
             </div>
+            <div class="card-body" style="padding: 1.25rem; flex: 1 1 auto;">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid mb-3" style="max-height: 150px; object-fit: contain; max-width: 100%; height: auto;">
+                {% else %}
+                    <div class="mb-3 text-muted py-4 bg-light rounded">Нет фото</div>
+                {% endif %}
+                <p class="text-muted text-start mb-1"><strong>Категория:</strong> {{ product.category.name }}</p>
+                <h1 class="card-title pricing-card-title mb-3">{{ product.price }} <small class="text-muted fw-light">руб.</small></h1>
+
+                <!-- Ограничение описания до 100 символов строго по критериям -->
+                <p class="text-muted text-start mb-4">{{ product.description|truncatechars:100 }}</p>
+
+                <!-- Ссылка на детальную страницу товара -->
+                <a href="{% url 'catalog:product_detail' product.pk %}" class="btn btn-outline-primary w-100 mb-2" style="display: block; width: 100%;">Посмотреть</a>
+                <button type="button" class="btn btn-primary w-100" style="display: block; width: 100%;">Купить</button>
+            </div>
+        </div>
     </div>
+    {% empty %}
+    <p class="text-muted col-12">В магазине пока нет доступных товаров.</p>
+    {% endfor %}
 </div>
-</main>
-</div>
-</div>
-</body>
-</html>
+
+<!-- Блок пагинации (Дополнительное задание №2) -->
+{% if page_obj.has_other_pages %}
+<nav aria-label="Page navigation" class="d-flex justify-content-center mt-4" style="display: flex; justify-content: center; margin-top: 1.5rem;">
+    <ul class="pagination" style="display: flex; list-style: none; padding-left: 0; gap: 5px;">
+        {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page=1" style="padding: .375rem .75rem; border: 1px solid #dee2e6; text-decoration: none; border-radius: .25rem;">&laquo; Первая</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}" style="padding: .375rem .75rem; border: 1px solid #dee2e6; text-decoration: none; border-radius: .25rem;">Назад</a></li>
+        {% endif %}
+
+        <li class="page-item disabled"><span class="page-link text-dark" style="padding: .375rem .75rem; background-color: #e9ecef; border: 1px solid #dee2e6; border-radius: .25rem;">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span></li>
+
+        {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}" style="padding: .375rem .75rem; border: 1px solid #dee2e6; text-decoration: none; border-radius: .25rem;">Вперед</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" style="padding: .375rem .75rem; border: 1px solid #dee2e6; text-decoration: none; border-radius: .25rem;">Последняя &raquo;</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
+
