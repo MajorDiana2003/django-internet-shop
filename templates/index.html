@@ -29,8 +29,8 @@
             </div>
             <hr class="text-secondary" style="border-top: 1px solid white; opacity: 0.25;">
             <ul class="nav">
-                <li><a href="/" class="nav-link active">Главная</a></li>
-                <li><a href="/contacts/" class="nav-link">Контакты</a></li>
+                <li><a href="{% url 'catalog:home' %}" class="nav-link active">Главная</a></li>
+                <li><a href="{% url 'catalog:contacts' %}" class="nav-link">Контакты</a></li>
             </ul>
         </nav>
 
@@ -39,26 +39,28 @@
             <h1 class="display-4 mb-4">Наши товары и услуги</h1>
             <p class="text-muted mb-5">Добро пожаловать в наш новый интернет-магазин на Django!</p>
 
-            <div class="row justify-content-center" style="gap: 20px; flex-wrap: wrap;">
+                        <div class="row justify-content-center" style="gap: 20px; flex-wrap: wrap;">
+                <!-- Цикл Django для автоматического вывода всех продуктов из базы данных -->
+                {% for product in products %}
                 <div class="card shadow-sm" style="width: 18rem;">
-                    <div class="card-header py-3 bg-light"><h4 class="my-0 fw-normal">Товар 1</h4></div>
+                    <div class="card-header py-3 bg-light">
+                        <h4 class="my-0 fw-normal">{{ product.name }}</h4>
+                    </div>
                     <div class="card-body">
-                        <h1 class="card-title pricing-card-title">$99</h1>
-                        <p class="text-muted mt-3">Описание крутого товара в нашем магазине.</p>
-                        <button type="button" class="w-100 btn btn-primary">Купить</button>
+                        <p class="text-muted text-start"><strong>Категория:</strong> {{ product.category.name }}</p>
+                        <h1 class="card-title pricing-card-title">{{ product.price }} <small class="text-muted fw-light">руб.</small></h1>
+                        <p class="text-muted mt-3 text-start">{{ product.description }}</p>
+                        <button type="button" class="w-100 btn btn-primary mt-auto">Купить</button>
                     </div>
                 </div>
-                <div class="card shadow-sm" style="width: 18rem;">
-                    <div class="card-header py-3 bg-light"><h4 class="my-0 fw-normal">Товар 2</h4></div>
-                    <div class="card-body">
-                        <h1 class="card-title pricing-card-title">$149</h1>
-                        <p class="text-muted mt-3">Описание премиум товара для клиентов.</p>
-                        <button type="button" class="w-100 btn btn-primary">Купить</button>
-                    </div>
-                </div>
+                {% empty %}
+                <p class="text-muted">В магазине пока нет доступных товаров.</p>
+                {% endfor %}
             </div>
-        </main>
     </div>
+</div>
+</main>
+</div>
 </div>
 </body>
 </html>
