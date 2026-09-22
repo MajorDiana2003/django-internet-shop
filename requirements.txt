@@ -1,5 +1,6 @@
-django
-psycopg2-binary
-pillow
-python-dotenv
+mypy
+black
+isort
+flake8
+django-stubs
 

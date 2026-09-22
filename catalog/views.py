@@ -3,7 +3,14 @@ from typing import Any
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView, ListView, View
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    ListView,
+    UpdateView,
+    View,
+)
 
 from .forms import ProductForm
 from .models import ContactInfo, Product
@@ -71,4 +78,28 @@ class ProductCreateView(CreateView):
     model = Product
     form_class = ProductForm
     template_name = "product_form.html"
+    success_url = reverse_lazy("catalog:home")
+
+
+class ProductUpdateView(UpdateView):
+    """CBV для редактирования существующего товара."""
+
+    model = Product
+    form_class = ProductForm
+    template_name = "catalog/product_form.html"
+
+    def get_success_url(self) -> str:
+        """Перенаправление на детальную страницу обновленного товара."""
+        return str(
+            reverse_lazy(
+                "catalog:product_detail", kwargs={"pk": self.object.pk}
+            )
+        )
+
+
+class ProductDeleteView(DeleteView):
+    """CBV для удаления товара."""
+
+    model = Product
+    template_name = "catalog/product_confirm_delete.html"
     success_url = reverse_lazy("catalog:home")
