@@ -29,15 +29,3 @@ urlpatterns = [
 # Раздача медиафайлов в режиме разработки
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-
-=======
-
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    # Подключаем маршруты приложения catalog через функцию include()
-    path('', include('catalog.urls', namespace='catalog')),
-]
-
-
-

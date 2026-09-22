@@ -1,46 +1,77 @@
-from django.shortcuts import render
-from catalog.models import Product, ContactInfo
+from django.shortcuts import render, get_object_or_404, redirect
+from django.core.paginator import Paginator
+from django.http import HttpRequest, HttpResponse
+from typing import Union
+
+from .models import Product, ContactInfo
+from .forms import ProductForm
+
+# Тип возвращаемого значения для редиректа или обычного ответа
+ResponseResult = Union[HttpResponse, HttpResponse]
 
 
-def home(request):
-    """Контроллер для главной страницы — выводит все товары из базы данных"""
-    # Получаем все продукты из базы данных PostgreSQL
-    products = Product.objects.all()
+def home(request: HttpRequest) -> HttpResponse:
+    """Контроллер для главной страницы — выводит все товары с пагинацией"""
+    # Сортируем товары
+    products_list = Product.objects.all().order_by('-created_at')
 
-    # Дополнительное задание №1: Выводим последние 5 товаров в консоль
+    # Выводим последние 5 товаров в консоль
     print("\n--- ПОСЛЕДНИЕ ТОВАРЫ В КОНСОЛИ ---")
-    for prod in products[:5]:
+    for prod in products_list[:5]:
         print(prod)
     print("-----------------------------------\n")
 
-    # Передаем продукты внутрь HTML-шаблона через контекст
-    return render(request, 'index.html', {'products': products})
+    # Настраиваем пагинацию: выводим ровно по 3 товара на одну страницу
+    paginator = Paginator(products_list, 3)
+    page_number: str | None = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'index.html', {'page_obj': page_obj})
 
 
-def contacts(request):
-    """Контроллер для страницы контактов — обрабатывает форму и выводит контакты из БД"""
+def contacts(request: HttpRequest) -> HttpResponse:
+    """Контроллер для страницы контактов"""
     if request.method == 'POST':
-        name = request.POST.get('name')
-        phone = request.POST.get('phone')
-        message = request.POST.get('message')
+        name: str | None = request.POST.get('name')
+        phone: str | None = request.POST.get('phone')
+        message: str | None = request.POST.get('message')
 
-        print("\n==========================================")
-        print("   ПОЛУЧЕНЫ ДАННЫЕ ИЗ ФОРМЫ (DJANGO)     ")
-        print("==========================================")
-        print(f"Имя: {name}\nТелефон: {phone}\nСообщение: {message}")
-        print("==========================================\n")
+        print("\n" + "=" * 40)
+        print(" ПОЛУЧЕНЫ ДАННЫЕ ИЗ ФОРМЫ (DJANGO) ")
+        print(f"Имя: {name} | Телефон: {phone}")
+        print(f"Сообщение: {message}")
+        print("=" * 40 + "\n")
 
-    # Дополнительное задание №2: Берем контактную информацию из базы данных
-    contact_data = ContactInfo.objects.first()
+    contact_data: ContactInfo | None = ContactInfo.objects.first()
     if not contact_data:
-        # Если в базе ещё нет контактов, создадим автоматическую заглушку, чтобы сайт не падал
         contact_data = ContactInfo.objects.create(
-            phone='+7 (999) 000-00-00',
-            email='info@my-django-shop.ru',
-            address='г. Шахты, ул. Программистов, д. 1'
+            phone="+7 (999) 000-00-00",
+            email="info@my-django-shop.ru",
+            address="г. Шахты, ул. Программистов, д. 1"
         )
 
     return render(request, 'contacts.html', {'contact': contact_data})
+
+
+def product_detail(request: HttpRequest, pk: int) -> HttpResponse:
+    """Задание 1: Контроллер для детальной страницы товара"""
+    product: Product = get_object_or_404(Product, pk=pk)
+    return render(request, 'product_detail.html', {'product': product})
+
+
+def product_create(request: HttpRequest) -> ResponseResult:
+    """Дополнительное задание №1: Контроллер для создания товара через форму"""
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('catalog:home')
+    else:
+        form = ProductForm()
+
+    return render(request, 'product_form.html', {'form': form})
+
+
 
 
 

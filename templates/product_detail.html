@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="container text-start" style="text-align: left !important; max-width: 1140px; margin-right: auto; margin-left: auto; padding-right: .75rem; padding-left: .75rem;">
+    <!-- Кнопка возврата на главную -->
+    <a href="{% url 'catalog:home' %}" class="btn btn-secondary mb-4" style="margin-bottom: 1.5rem; display: inline-block; padding: .375rem .75rem; background-color: #6c757d; color: #fff; text-decoration: none; border-radius: .25rem;">&larr; Назад на главную</a>
+
+    <div class="row" style="display: flex; flex-wrap: wrap; margin-right: -.75rem; margin-left: -.75rem;">
+        <!-- Левая колонка: изображение товара -->
+        <div class="col-md-6" style="flex: 0 0 auto; width: 50%; padding-right: .75rem; padding-left: .75rem;">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded border" style="max-height: 400px; object-fit: contain; max-width: 100%; height: auto; border: 1px solid #dee2e6; border-radius: .375rem;">
+            {% else %}
+                <div class="p-5 bg-light text-center text-muted border rounded" style="padding: 3rem; background-color: #f8f9fa; text-align: center; color: #6c757d; border: 1px solid #dee2e6; border-radius: .375rem;">Изображение отсутствует</div>
+            {% endif %}
+        </div>
+
+        <!-- Правая колонка: информация -->
+        <div class="col-md-6" style="flex: 0 0 auto; width: 50%; padding-right: .75rem; padding-left: .75rem;">
+            <h1 class="display-5 fw-bold" style="font-size: 3rem; font-weight: 700; margin-bottom: .5rem;">{{ product.name }}</h1>
+            <p class="fs-3 text-primary fw-bold" style="font-size: 1.75rem; color: #0d6efd; font-weight: 700;">{{ product.price }} руб.</p>
+            <hr style="margin: 1rem 0; color: inherit; background-color: currentColor; border: 0; opacity: .25; height: 1px;">
+            <p class="text-muted"><strong>Категория:</strong> {{ product.category.name }}</p>
+
+            <h5 class="mt-4" style="margin-top: 1.5rem;">Полное описание:</h5>
+            <!-- Фильтр linebreaks позволяет сохранять переносы строк, если описание длинное -->
+            <p class="lead" style="font-size: 1.25rem; font-weight: 300; white-space: pre-line;">{{ product.description }}</p>
+
+            <button class="btn btn-success btn-lg mt-3 w-100" style="display: block; width: 100%; padding: .5rem 1rem; font-size: 1.25rem; border-radius: .3rem; background-color: #198754; color: #fff; border: none; margin-top: 1rem;">Купить товар</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
