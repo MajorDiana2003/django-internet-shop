@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if object %}Редактирование статьи{% else %}Новая статья{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container text-start" style="text-align: left !important; max-width: 600px; margin-right: auto; margin-left: auto; padding: 0 .75rem;">
+    <h1 class="mb-4 text-center" style="text-align: center !important; margin-bottom: 1.5rem;">
+        {% if object %}Редактировать публикацию{% else %}Написать новую статью{% endif %}
+    </h1>
+
+    <form method="post" enctype="multipart/form-data" class="border p-4 rounded bg-light" style="padding: 1.5rem; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: .375rem;">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div class="mb-3" style="margin-bottom: 1rem;">
+                <label class="form-label" style="display: inline-block; margin-bottom: .5rem;" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                <!-- Добавляем Bootstrap стиль для полей -->
+                <div class="form-field-wrapper">
+                    {% if field.field.widget.input_type == "checkbox" %}
+                        {{ field }}
+                    {% else %}
+                        <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control" value="{% if field.value %}{{ field.value }}{% endif %}" style="display: block; width: 100%; padding: .375rem .75rem; border: 1px solid #ced4da; border-radius: .25rem;">
+                    {% endif %}
+                </div>
+                {% if field.errors %}
+                    <div class="text-danger small mt-1" style="color: #dc3545; font-size: .875em; margin-top: .25rem;">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div class="d-flex gap-2 mt-4" style="display: flex; gap: 10px; margin-top: 1.5rem;">
+            <button type="submit" class="btn btn-success flex-grow-1" style="flex-grow: 1; padding: .375rem .75rem; background-color: #198754; color: #fff; border: none; border-radius: .25rem;">Сохранить</button>
+            <a href="{% url 'blog:list' %}" class="btn btn-secondary" style="padding: .375rem .75rem; background-color: #6c757d; color: #fff; text-decoration: none; border-radius: .25rem;">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

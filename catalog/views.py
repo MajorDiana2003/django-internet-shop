@@ -1,78 +1,74 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.core.paginator import Paginator
+from typing import Any
+
 from django.http import HttpRequest, HttpResponse
-from typing import Union
+from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, DetailView, ListView, View
 
-from .models import Product, ContactInfo
 from .forms import ProductForm
-
-# Тип возвращаемого значения для редиректа или обычного ответа
-ResponseResult = Union[HttpResponse, HttpResponse]
+from .models import ContactInfo, Product
 
 
-def home(request: HttpRequest) -> HttpResponse:
-    """Контроллер для главной страницы — выводит все товары с пагинацией"""
-    # Сортируем товары
-    products_list = Product.objects.all().order_by('-created_at')
+class ProductListView(ListView):
+    """CBV для главной страницы со списком товаров и пагинацией"""
 
-    # Выводим последние 5 товаров в консоль
-    print("\n--- ПОСЛЕДНИЕ ТОВАРЫ В КОНСОЛИ ---")
-    for prod in products_list[:5]:
-        print(prod)
-    print("-----------------------------------\n")
+    model = Product
+    template_name = "index.html"
+    context_object_name = "page_obj"  # сохраняем имя переменной для шаблона
+    paginate_by = 3
 
-    # Настраиваем пагинацию: выводим ровно по 3 товара на одну страницу
-    paginator = Paginator(products_list, 3)
-    page_number: str | None = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    def get_queryset(self) -> Any:
+        """Получаем отсортированный список всех доступных товаров"""
+        queryset = super().get_queryset().order_by("-created_at")
 
-    return render(request, 'index.html', {'page_obj': page_obj})
+        # Сохраняем логику вывода в консоль из прошлых заданий
+        print("\n--- ПОСЛЕДНИЕ ТОВАРЫ В КОНСОЛИ (CBV) ---")
+        for prod in queryset[:5]:
+            print(prod)
+        print("-----------------------------------------\n")
+
+        return queryset
 
 
-def contacts(request: HttpRequest) -> HttpResponse:
-    """Контроллер для страницы контактов"""
-    if request.method == 'POST':
-        name: str | None = request.POST.get('name')
-        phone: str | None = request.POST.get('phone')
-        message: str | None = request.POST.get('message')
+class ContactsView(View):
+    """CBV для страницы контактов с обработкой GET и POST методов"""
+
+    def get(self, request: HttpRequest) -> HttpResponse:
+        contact_data: ContactInfo | None = ContactInfo.objects.first()
+        if not contact_data:
+            contact_data = ContactInfo.objects.create(
+                phone="+7 (999) 000-00-00",
+                email="info@my-django-shop.ru",
+                address="г. Шахты, ул. Программистов, д. 1",
+            )
+        return render(request, "contacts.html", {"contact": contact_data})
+
+    def post(self, request: HttpRequest) -> HttpResponse:
+        name: str | None = request.POST.get("name")
+        phone: str | None = request.POST.get("phone")
+        message: str | None = request.POST.get("message")
 
         print("\n" + "=" * 40)
-        print(" ПОЛУЧЕНЫ ДАННЫЕ ИЗ ФОРМЫ (DJANGO) ")
+        print(" ПОЛУЧЕНЫ ДАННЫЕ ИЗ ФОРМЫ (CBV) ")
         print(f"Имя: {name} | Телефон: {phone}")
         print(f"Сообщение: {message}")
         print("=" * 40 + "\n")
 
-    contact_data: ContactInfo | None = ContactInfo.objects.first()
-    if not contact_data:
-        contact_data = ContactInfo.objects.create(
-            phone="+7 (999) 000-00-00",
-            email="info@my-django-shop.ru",
-            address="г. Шахты, ул. Программистов, д. 1"
-        )
-
-    return render(request, 'contacts.html', {'contact': contact_data})
+        return self.get(request)
 
 
-def product_detail(request: HttpRequest, pk: int) -> HttpResponse:
-    """Задание 1: Контроллер для детальной страницы товара"""
-    product: Product = get_object_or_404(Product, pk=pk)
-    return render(request, 'product_detail.html', {'product': product})
+class ProductDetailView(DetailView):
+    """CBV для детальной страницы отдельного товара"""
+
+    model = Product
+    template_name = "product_detail.html"
+    context_object_name = "product"
 
 
-def product_create(request: HttpRequest) -> ResponseResult:
-    """Дополнительное задание №1: Контроллер для создания товара через форму"""
-    if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('catalog:home')
-    else:
-        form = ProductForm()
+class ProductCreateView(CreateView):
+    """CBV для создания нового товара через валидируемую форму"""
 
-    return render(request, 'product_form.html', {'form': form})
-
-
-
-
-
-
+    model = Product
+    form_class = ProductForm
+    template_name = "product_form.html"
+    success_url = reverse_lazy("catalog:home")

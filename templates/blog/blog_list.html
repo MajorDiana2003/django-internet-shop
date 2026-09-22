@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Блог проекта{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <h1 class="display-4 my-0">Публикации и статьи</h1>
+    <a href="{% url 'blog:create' %}" class="btn btn-primary" style="padding: .375rem .75rem; background-color: #0d6efd; color: #fff; text-decoration: none; border-radius: .25rem;">Написать статью</a>
+</div>
+
+<div class="row justify-content-center" style="display: flex; flex-wrap: wrap; margin-right: -.75rem; margin-left: -.75rem;">
+    {% for post in posts %}
+    <div class="col-md-6 px-2 mb-4" style="flex: 0 0 auto; width: 50%; padding: 0 .75rem; margin-bottom: 1.5rem;">
+        <div class="card h-100" style="display: flex; flex-direction: column; height: 100%; background-color: #fff; border: 1px solid #dee2e6; border-radius: .375rem; box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);">
+            <div class="card-body" style="padding: 1.25rem; flex: 1 1 auto; text-align: left;">
+                {% if post.preview %}
+                    <img src="{{ post.preview.url }}" alt="{{ post.title }}" class="img-fluid rounded mb-3" style="max-height: 200px; object-fit: cover; width: 100%; border-radius: .25rem; margin-bottom: 1rem;">
+                {% endif %}
+                <h3 class="card-title fw-bold" style="margin-top: 0; font-size: 1.75rem;">{{ post.title }}</h3>
+                <p class="text-muted small" style="color: #6c757d; font-size: .875em;">Дата: {{ post.created_at|date:"d.m.Y H:i" }} | 👀 Просмотры: {{ post.views_count }}</p>
+                <p class="card-text" style="margin-bottom: 1.5rem;">{{ post.content|truncatechars:150 }}</p>
+
+                <div class="d-flex gap-2" style="display: flex; gap: 10px;">
+                    <a href="{% url 'blog:detail' post.slug %}" class="btn btn-outline-primary btn-sm" style="padding: .25rem .5rem; font-size: .875rem; border: 1px solid #0d6efd; color: #0d6efd; text-decoration: none; border-radius: .25rem;">Читать полностью</a>
+                    <a href="{% url 'blog:update' post.slug %}" class="btn btn-outline-secondary btn-sm" style="padding: .25rem .5rem; font-size: .875rem; border: 1px solid #6c757d; color: #6c757d; text-decoration: none; border-radius: .25rem;">Редактировать</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-muted text-center col-12" style="color: #6c757d; text-align: center; width: 100%;">В блоге пока нет ни одной опубликованной записи.</p>
+    {% endfor %}
+</div>
+{% endblock %}
