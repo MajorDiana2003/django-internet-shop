@@ -28,7 +28,11 @@
             <!-- Фильтр linebreaks позволяет сохранять переносы строк, если описание длинное -->
             <p class="lead" style="font-size: 1.25rem; font-weight: 300; white-space: pre-line;">{{ product.description }}</p>
 
-            <button class="btn btn-success btn-lg mt-3 w-100" style="display: block; width: 100%; padding: .5rem 1rem; font-size: 1.25rem; border-radius: .3rem; background-color: #198754; color: #fff; border: none; margin-top: 1rem;">Купить товар</button>
+            <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-success flex-grow-1" style="...">Купить товар</button>
+                <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-warning text-white">Редактировать</a>
+                <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-danger">Удалить</a>
+            </div>
         </div>
     </div>
 </div>
