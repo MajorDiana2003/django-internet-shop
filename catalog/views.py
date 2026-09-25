@@ -1,3 +1,5 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from typing import Any
 
 from django.http import HttpRequest, HttpResponse
@@ -64,7 +66,7 @@ class ContactsView(View):
         return self.get(request)
 
 
-class ProductDetailView(DetailView):
+class ProductDetailView(LoginRequiredMixin, DetailView):
     """CBV для детальной страницы отдельного товара"""
 
     model = Product
@@ -72,7 +74,7 @@ class ProductDetailView(DetailView):
     context_object_name = "product"
 
 
-class ProductCreateView(CreateView):
+class ProductCreateView(LoginRequiredMixin, CreateView):
     """CBV для создания нового товара через валидируемую форму"""
 
     model = Product
@@ -81,25 +83,20 @@ class ProductCreateView(CreateView):
     success_url = reverse_lazy("catalog:home")
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
     """CBV для редактирования существующего товара."""
 
     model = Product
     form_class = ProductForm
-    template_name = "catalog/product_form.html"
+    template_name = "product_form.html"
 
     def get_success_url(self) -> str:
-        """Перенаправление на детальную страницу обновленного товара."""
-        return str(
-            reverse_lazy(
-                "catalog:product_detail", kwargs={"pk": self.object.pk}
-            )
-        )
+        return reverse("catalog:product_detail", kwargs={"pk": self.object.pk})
 
 
-class ProductDeleteView(DeleteView):
+class ProductDeleteView(LoginRequiredMixin, DeleteView):
     """CBV для удаления товара."""
 
     model = Product
-    template_name = "catalog/product_confirm_delete.html"
+    template_name = "product_confirm_delete.html"
     success_url = reverse_lazy("catalog:home")
