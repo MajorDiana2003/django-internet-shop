@@ -9,6 +9,7 @@ urlpatterns = [
     path("", include("catalog.urls", namespace="catalog")),
     # Подключение путей приложения блога (Задание 2)
     path("blogs/", include("blog.urls", namespace="blog")),
+    path('users/', include('users.urls', namespace='users')),
 ]
 
 if settings.DEBUG:
