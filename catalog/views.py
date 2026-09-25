@@ -18,6 +18,7 @@ from django.views.generic import (
 
 from .forms import ProductForm
 from .models import ContactInfo, Product
+from catalog.services import get_products_by_category
 
 
 class ProductListView(ListView):
@@ -121,3 +122,14 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
             return super().dispatch(request, *args, **kwargs)
         raise PermissionDenied
 
+
+class CategoryProductsListView(ListView):
+    model = Product
+    template_name = 'catalog/category_products.html'
+    context_object_name = 'products'
+
+    def get_queryset(self):
+        # Ловим ID категории, который пришел из URL-адреса
+        category_id = self.kwargs.get('pk')
+
+        return get_products_by_category(category_id)

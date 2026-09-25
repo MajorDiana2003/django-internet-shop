@@ -142,3 +142,10 @@ AUTH_USER_MODEL = 'users.User'
 LOGIN_URL = 'users:login'
 LOGIN_REDIRECT_URL = 'catalog:home'
 
+# Настройки кеширования через Redis (Задание 1)
+# Локальный кеш-заглушка для разработки без Redis (Задание 1)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    }
+}

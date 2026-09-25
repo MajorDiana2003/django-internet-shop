@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">Продукты в выбранной категории</h2>
+    <div class="row">
+        {% for product in products %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <p class="card-text text-muted">{{ product.description|truncatechars:100 }}</p>
+                        <p class="card-text <strong>fw-bold</strong>">{{ product.price }} руб.</p>
+                        <a href="{% url 'catalog:product_detail' product.pk %}" class="btn btn-primary btn-sm">Посмотреть</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <p class="alert alert-info">В этой категории пока нет опубликованных товаров или данные ещё не закешированы.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
