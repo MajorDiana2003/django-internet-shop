@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 
 class Category(models.Model):
@@ -37,10 +38,25 @@ class Product(models.Model):
     updated_at: models.DateTimeField = models.DateTimeField(
         auto_now=True, verbose_name="Дата последнего изменения"
     )
+    # Поле признака публикации (Задание 1)
+    is_published = models.BooleanField(default=False, verbose_name="Признак публикации")
+
+    # Поле владельца продукта (Задание 2)
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        verbose_name="Владелец",
+        blank=True,
+        null=True
+    )
 
     class Meta:
         verbose_name = "Товар"
         verbose_name_plural = "Товары"
+        # Добавляем кастомное право отмены публикации (Задание 1, пункт 1)
+        permissions = [
+            ("can_unpublish_product", "Может отменять публикацию продукта"),
+        ]
 
     def __str__(self) -> str:
         return str(self.name)

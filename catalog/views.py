@@ -1,3 +1,5 @@
+from django.core.exceptions import PermissionDenied
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from typing import Any
@@ -82,6 +84,11 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
     template_name = "product_form.html"
     success_url = reverse_lazy("catalog:home")
 
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
+
+
 
 class ProductUpdateView(LoginRequiredMixin, UpdateView):
     """CBV для редактирования существующего товара."""
@@ -93,6 +100,13 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
     def get_success_url(self) -> str:
         return reverse("catalog:product_detail", kwargs={"pk": self.object.pk})
 
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.object.owner == request.user or request.user.has_perm('catalog.can_unpublish_product'):
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
+
 
 class ProductDeleteView(LoginRequiredMixin, DeleteView):
     """CBV для удаления товара."""
@@ -100,3 +114,10 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
     model = Product
     template_name = "product_confirm_delete.html"
     success_url = reverse_lazy("catalog:home")
+
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.object.owner == request.user or request.user.has_perm('catalog.delete_product'):
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+

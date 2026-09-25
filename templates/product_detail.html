@@ -30,8 +30,14 @@
 
             <div class="d-flex gap-2 mt-3">
                 <button class="btn btn-success flex-grow-1" style="...">Купить товар</button>
-                <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-warning text-white">Редактировать</a>
-                <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-danger">Удалить</a>
+                <!-- Кнопку редактирования видит только создатель ИЛИ модератор -->
+                {% if user == object.owner or perms.catalog.can_unpublish_product %}
+                    <a href="{% url 'catalog:product_update' object.pk %}" class="btn btn-warning">Редактировать</a>
+                {% endif %}
+                <!-- Кнопку удаления видит только создатель ИЛИ модератор с правом удаления -->
+                {% if user == object.owner or perms.catalog.delete_product %}
+                    <a href="{% url 'catalog:product_delete' object.pk %}" class="btn btn-danger">Удалить</a>
+                {% endif %}
             </div>
         </div>
     </div>
