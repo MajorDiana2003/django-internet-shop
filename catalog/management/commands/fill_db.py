@@ -18,6 +18,10 @@ class Command(BaseCommand):
         try:
             # Запускаем системную команду loaddata для нашего json-файла
             call_command("loaddata", "catalog_data.json")
-            self.stdout.write(self.style.SUCCESS("🎉 Фикстуры загружены в БД корректно, связи выстроены!"))
+            self.stdout.write(
+                self.style.SUCCESS(
+                    "🎉 Фикстуры загружены в БД корректно, связи выстроены!"
+                )
+            )
         except Exception as e:
             self.stdout.write(self.style.ERROR(f"Ошибка при загрузке фикстур: {e}"))
